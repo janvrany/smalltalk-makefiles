@@ -1,0 +1,24 @@
+#
+# Helper template to clone prerequisite project from git
+#
+# Usage:
+#
+#  $(eval $(call git-clone-local,<Variable_Holding_Directory_Name>,<Repository>,(Branch>))
+#
+define mercurial-clone-local =
+$$($(1)):
+	mkdir -p $$(dir $$($(1)))
+	hg clone -b $(3) $(2) $$($(1))
+
+prereq:: $$($(1))
+
+GNUmakefile.local::
+	@echo "# To load $$(notdir $$($(1))) from local directory, set $(1)" >> $$@
+	@echo "# variable to directory where $$(notdir $$($(1))) is cloned. If unset (default)" >> $$@
+	@echo "# it will be cloned from $(2)." >> $$@
+	@echo "# $(1)=$$(shell realpath --relative-to=. $(shell git rev-parse --show-toplevel))/../$$(notdir $$($(1)))" >> $$@
+	@echo "" >> $$@
+endef
+
+# Keep the following VIM modeline as last line!
+# vi:ft=make
