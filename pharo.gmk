@@ -165,8 +165,9 @@ endef
 #   $(call pharo-load-local,<image>,<baseline>,<src directory>)
 #
 define pharo-load-local =
-	$(PHARO_VM_HEADLESS) $(1) eval --save "(IceRepositoryCreator new location: '$(shell realpath --relative-to=. $(shell git -C $(3) rev-parse --show-toplevel))' asFileReference; createRepository) register" || rm $@
-    $(PHARO_VM_HEADLESS) $(1) eval --save "Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load." || rm $@
+	test -e $$(git -C $(3) rev-parse --show-toplevel)/.git || (echo "Cannot locate git repository in $(strip $(3))" && false)
+	$(PHARO_VM_HEADLESS) $(1) eval --save "(IceRepositoryCreator new location: '$$(realpath --relative-to=. $$(git -C $(3) rev-parse --show-toplevel))' asFileReference; createRepository) register" || (rm $@ && false)
+    $(PHARO_VM_HEADLESS) $(1) eval --save "Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load." || (rm $@ && false)
 endef
 
 # Keep the following VIM modeline as last line!
