@@ -80,6 +80,32 @@ $(PHARO_VM_DEFAULT):
 endif
 PHARO_VM_HEADLESS ?= $(PHARO_VM) --headless
 
+#
+# Integration with UsablePharo8
+#
+# https://github.com/shingarov/UsablePharo8
+#
+ifndef USABLE_PHARO_DIR
+USABLE_PHARO_DIR    := ../3rdparty/UsablePharo8
+USABLE_PHARO_URL    ?= git@github.com:shingarov/UsablePharo8
+USABLE_PHARO_BRANCH ?= master
+
+USABLE_PHARO_IMAGE  ?= $(USABLE_PHARO_DIR)/UsablePharo.image
+
+$(USABLE_PHARO_DIR):
+	mkdir -p $@
+	git clone --recurse-submodules -b $(USABLE_PHARO_BRANCH) $(USABLE_PHARO_URL) $(USABLE_PHARO_DIR)
+
+$(USABLE_PHARO_DIR)/UsablePharo.image: $(PHARO_VM) | $(USABLE_PHARO_DIR)
+	make -C $(USABLE_PHARO_DIR) PHARO_VM=$(abspath $(PHARO_VM)) PHARO_DOWNLOAD_VERSION=$(PHARO_DOWNLOAD_VERSION)
+
+clean::
+	if [ -d $(USABLE_PHARO_DIR) ]; then make -C $(USABLE_PHARO_DIR) clean; fi
+
+mrproper::
+	if [ -d $(USABLE_PHARO_DIR) ]; then make -C $(USABLE_PHARO_DIR) mrproper; fi
+endif
+
 prereq:: $(PHARO_VM) $(PHARO_IMAGE)
 
 clean::
@@ -97,6 +123,9 @@ GNUmakefile.local::
 	@echo "# variable to desired image. If undefined (default), base Pharo" >> $@
 	@echo "# image is downloaded from Pharo website." >> $@
 	@echo "# PHARO_IMAGE=$(shell realpath --relative-to=. $(shell git rev-parse --show-toplevel))/../UsablePharo8/UsablePharo.image" >> $@
+	@echo "" >> $@
+	@echo "# To use UsablePharo8 as base image, uncomment following line." >> $@
+	@echo '# PHARO_IMAGE=$$(USABLE_PHARO_IMAGE)' >> $@
 	@echo "" >> $@
 	@echo "# To use custom Pharo VM, set PHARO_VM variable to desired vm." >> $@
 	@echo "# If undefined (default), Pharo stable VM is downloaded from" >> $@
