@@ -121,7 +121,7 @@ GNUmakefile.local::
 define pharo-copy-image =
 	$(PHARO_VM_HEADLESS) $(1) save $(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$(subst .image,,$(strip $(2)))
 	PHARO_SOURCES=`$(PHARO_VM_HEADLESS) $(1) eval "Smalltalk sourcesName" | tr -d \'`; \
-	if [ ! "$$PHARO_SOURCES" -ef "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)" ]; then \
+	if [ ! -f "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)" ]; then \
 		ln    "$$PHARO_SOURCES" "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)" \
 		|| cp "$$PHARO_SOURCES" "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)"; \
 	fi
