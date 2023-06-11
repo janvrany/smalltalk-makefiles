@@ -86,7 +86,7 @@ PHARO_VM_HEADLESS ?= $(PHARO_VM) --headless
 # https://github.com/shingarov/UsablePharo8
 #
 ifndef USABLE_PHARO_DIR
-USABLE_PHARO_DIR    := ../3rdparty/UsablePharo8
+USABLE_PHARO_DIR    := $(shell realpath --relative-to=. $(shell git rev-parse --show-toplevel))/3rdparty/UsablePharo8
 USABLE_PHARO_URL    ?= git@github.com:shingarov/UsablePharo8
 USABLE_PHARO_BRANCH ?= master
 
