@@ -154,7 +154,7 @@ define pharo-copy-image =
 		ln    "$$PHARO_SOURCES" "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)" \
 		|| cp "$$PHARO_SOURCES" "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)"; \
 	fi
-	$(PHARO_VM_HEADLESS) $(2) eval --save "SystemWindow closeTopWindow."
+	$(PHARO_VM_HEADLESS) $(2) eval --save "SystemWindow closeTopWindow. (Delay forMilliseconds: 500) wait."
 endef
 
 #
