@@ -86,7 +86,11 @@ PHARO_VM_HEADLESS ?= $(PHARO_VM) --headless
 # https://github.com/shingarov/UsablePharo8
 #
 ifndef USABLE_PHARO_DIR
-USABLE_PHARO_DIR    := $(shell realpath --relative-to=. $(shell git rev-parse --show-toplevel))/3rdparty/UsablePharo8
+  ifneq ($(shell git rev-parse --show-toplevel 2> /dev/null),)
+USABLE_PHARO_DIR    := $(shell realpath --relative-to=. $$(git rev-parse --show-toplevel) || echo ..)/3rdparty/UsablePharo8
+  else
+USABLE_PHARO_DIR    := ./3rdparty/UsablePharo8
+  endif
 USABLE_PHARO_URL    ?= git@github.com:shingarov/UsablePharo8
 USABLE_PHARO_BRANCH ?= master
 
@@ -122,7 +126,11 @@ GNUmakefile.local::
 	@echo "# To use custom, pre-configured Pharo image, set PHARO_IMAGE" >> $@
 	@echo "# variable to desired image. If undefined (default), base Pharo" >> $@
 	@echo "# image is downloaded from Pharo website." >> $@
-	@echo "# PHARO_IMAGE=$(shell realpath --relative-to=. $(shell git rev-parse --show-toplevel))/../UsablePharo8/UsablePharo.image" >> $@
+ifneq ($(shell git rev-parse --show-toplevel 2> /dev/null),)
+	@echo "# PHARO_IMAGE=$(shell realpath --relative-to=. $$(git rev-parse --show-toplevel))/../UsablePharo8/UsablePharo.image" >> $@
+else
+	@echo "# PHARO_IMAGE=.../UsablePharo8/UsablePharo.image" >> $@
+endif
 	@echo "" >> $@
 	@echo "# To use UsablePharo8 as base image, uncomment following line." >> $@
 	@echo '# PHARO_IMAGE=$$(USABLE_PHARO_IMAGE)' >> $@
@@ -165,8 +173,9 @@ endef
 #   $(call pharo-load-local,<image>,<baseline>,<src directory>)
 #
 define pharo-load-local =
-	test -e $$(git -C $(3) rev-parse --show-toplevel)/.git || (echo "Cannot locate git repository in $(strip $(3))" && false)
-	$(PHARO_VM_HEADLESS) $(1) eval --save "[(IceRepositoryCreator new location: '$$(realpath --relative-to=. $$(git -C $(3) rev-parse --show-toplevel))' asFileReference; createRepository) register] on: IceDuplicatedRepository do:[:ex | 'ignore']" || (rm $@ && false)
+	if git -C $(3) rev-parse --show-toplevel -q > /dev/null 2> /dev/null; then \
+		$(PHARO_VM_HEADLESS) $(1) eval --save "[(IceRepositoryCreator new location: '$$(realpath --relative-to=. $$(git -C $(3) rev-parse --show-toplevel))' asFileReference; createRepository) register] on: IceDuplicatedRepository do:[:ex | 'ignore']" || (rm $@ && false) \
+	fi
 	$(PHARO_VM_HEADLESS) $(1) eval --save "Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load." || (rm $@ && false)
 endef
 

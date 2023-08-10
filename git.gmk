@@ -17,7 +17,11 @@ GNUmakefile.local::
 	@echo "# To load $$(notdir $$($(1))) from local directory, set $(1)" >> $$@
 	@echo "# variable to directory where $$(notdir $$($(1))) is cloned. If unset (default)" >> $$@
 	@echo "# it will be cloned from $(2)." >> $$@
-	@echo "# $(1)=$$(shell realpath --relative-to=. $(shell git rev-parse --show-toplevel))/../$$(notdir $$($(1)))" >> $$@
+ifneq ($(shell git rev-parse --show-toplevel 2> /dev/null),)
+	@echo "# $(1)=$$(shell realpath --relative-to=. $$(shell git rev-parse --show-toplevel))/../$$(notdir $$($(1)))" >> $$@
+else
+	@echo "# $(1)=.../$$(notdir $$($(1)))" >> $$@
+endif
 	@echo "" >> $$@
 endef
 
