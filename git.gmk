@@ -1,3 +1,14 @@
+_makefiles_dir=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+_hooks_dir=$(shell git rev-parse --git-path hooks)
+
+$(_hooks_dir)/%: $(_makefiles_dir)/hooks/%
+	ln -s $(shell realpath --relative-to $(_hooks_dir) $<) $@
+
+
+git-hooks-install: $(_hooks_dir)/commit-msg $(_hooks_dir)/pre-commit
+
+
+
 #
 # Helper template to clone prerequisite project from git
 #
