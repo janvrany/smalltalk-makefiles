@@ -3,7 +3,7 @@
 # Pharo version to (automagically) download
 PHARO_DOWNLOAD_VERSION ?= 80
 PHARO_DOWNLOAD_VERSION_90_PLUS :=$(shell expr $(PHARO_DOWNLOAD_VERSION) \>= 90)
-PHARO_DOWNLOAD_URL := http://files.pharo.org/get-files/$(PHARO_DOWNLOAD_VERSION)
+PHARO_DOWNLOAD_URL := https://files.pharo.org/get-files/$(PHARO_DOWNLOAD_VERSION)
 #
 # Automagically configure VM options depending on the OS
 #
