@@ -162,6 +162,17 @@ endif
 	@echo "" >> $@
 
 #
+# Debugging support, to enable, run with `make D=1 ...`
+#
+D ?= 0
+
+ifeq ($(D),0)
+	_PHARO_VM = $(PHARO_VM_HEADLESS)
+else
+	_PHARO_VM = $(PHARO_VM)
+endif
+
+#
 # Macro to copy image Pharo image. It should be as simple
 # as copying a file, but one has to handle .sources file
 # in case the source image is in different directory.
@@ -172,12 +183,12 @@ endif
 #
 define pharo-copy-image =
 	$(PHARO_VM_HEADLESS) $(1) save $(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$(subst .image,,$(strip $(2)))
-	PHARO_SOURCES=`$(PHARO_VM_HEADLESS) $(1) eval "Smalltalk sourcesName" | tr -d \'`; \
+	PHARO_SOURCES=`$(_PHARO_VM) $(1) eval --save "Smalltalk sourcesName" | tr -d \'`; \
 	if [ ! -f "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)" ]; then \
 		ln    "$$PHARO_SOURCES" "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)" \
 		|| cp "$$PHARO_SOURCES" "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)"; \
 	fi
-	$(PHARO_VM_HEADLESS) $(2) eval --save "SystemWindow closeTopWindow. (Delay forMilliseconds: 500) wait."
+	$(_PHARO_VM) $(2) eval --save "SystemWindow closeTopWindow. (Delay forMilliseconds: 500) wait."
 endef
 
 #
@@ -189,9 +200,9 @@ endef
 #
 define pharo-load-local =
 	if git -C $(3) rev-parse --show-toplevel -q > /dev/null 2> /dev/null; then \
-		$(PHARO_VM_HEADLESS) $(1) eval --save "[(IceRepositoryCreator new location: '$$(realpath --relative-to=. $$(git -C $(3) rev-parse --show-toplevel))' asFileReference; createRepository) register] on: IceDuplicatedRepository do:[:ex | 'ignore']" || (rm $@ && false) \
+		$(_PHARO_VM) $(1) eval --save "[(IceRepositoryCreator new location: '$$(realpath --relative-to=. $$(git -C $(3) rev-parse --show-toplevel))' asFileReference; createRepository) register] on: IceDuplicatedRepository do:[:ex | 'ignore']" || (rm $@ && false) \
 	fi
-	$(PHARO_VM_HEADLESS) $(1) eval --save "Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load." || (rm $@ && false)
+	$(_PHARO_VM) $(1) eval --save "Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load." || ( (test $(D) -ne 0 || rm $@) && false)
 endef
 
 # Keep the following VIM modeline as last line!
