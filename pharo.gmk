@@ -202,7 +202,7 @@ define pharo-load-local =
 	if git -C $(3) rev-parse --show-toplevel -q > /dev/null 2> /dev/null; then \
 		$(_PHARO_VM) $(1) eval --save "[(IceRepositoryCreator new location: '$$(realpath --relative-to=. $$(git -C $(3) rev-parse --show-toplevel))' asFileReference; createRepository) register] on: IceDuplicatedRepository do:[:ex | 'ignore']" || (rm $@ && false) \
 	fi
-	$(_PHARO_VM) $(1) eval --save "Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load." || ( (test $(D) -ne 0 || rm $@) && false)
+	$(_PHARO_VM) $(1) eval --save "EpMonitor current disableDuring: [Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load]." || ( (test $(D) -ne 0 || rm $@) && false)
 endef
 
 # Keep the following VIM modeline as last line!
