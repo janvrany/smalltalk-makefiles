@@ -189,6 +189,7 @@ define pharo-copy-image =
 		|| cp "$$PHARO_SOURCES" "$(dir $(abspath $(firstword $(MAKEFILE_LIST))))/$$(basename $$PHARO_SOURCES)"; \
 	fi
 	$(_PHARO_VM) $(2) eval --save "SystemWindow closeTopWindow. (Delay forMilliseconds: 500) wait."
+	$(_PHARO_VM) $(2) eval --save "OmSessionStore storeNameStrategy: OmTimeStampSuffixStrategy new. EpMonitor reset."
 endef
 
 #
