@@ -172,6 +172,10 @@ else
 	_PHARO_VM = $(PHARO_VM)
 endif
 
+define _as_string =
+	$(if $(strip $(1)),'$(strip $(1))',$(2))
+endef
+
 #
 # Macro to copy image Pharo image. It should be as simple
 # as copying a file, but one has to handle .sources file
@@ -197,13 +201,13 @@ endef
 #
 # Usage:
 #
-#   $(call pharo-load-local,<image>,<baseline>,<src directory>)
+#   $(call pharo-load-local, <image>, <baseline>, <src directory>[, <group1>[, <group2>[, <group3>]]])
 #
 define pharo-load-local =
 	if git -C $(3) rev-parse --show-toplevel -q > /dev/null 2> /dev/null; then \
 		$(_PHARO_VM) $(1) eval --save "[(IceRepositoryCreator new location: '$$(realpath --relative-to=. $$(git -C $(3) rev-parse --show-toplevel))' asFileReference; createRepository) register] on: IceDuplicatedRepository do:[:ex | 'ignore']" || (rm $@ && false) \
 	fi
-	$(_PHARO_VM) $(1) eval --save "EpMonitor current disableDuring: [Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load]." || ( (test $(D) -ne 0 || rm $@) && false)
+	$(_PHARO_VM) $(1) eval --save "EpMonitor current disableDuring: [Metacello new baseline: '$(strip $(2))'; repository: 'tonel://$(strip $(3))'; onConflictUseLoaded; load: #( $(call _as_string,$(4),'default') $(call _as_string,$(5)) $(call _as_string,$(6)) )]" || ( (test $(D) -ne 0 || rm $@) && false)
 endef
 
 # Keep the following VIM modeline as last line!
