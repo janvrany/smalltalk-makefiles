@@ -10,7 +10,9 @@ PHARO_DOWNLOAD_URL := https://files.pharo.org/get-files/$(PHARO_DOWNLOAD_VERSION
 
 UNAME := $(shell uname | tr "[:upper:]" "[:lower:]")
 ifneq (,$(findstring linux,$(UNAME)))
-  ifeq ($(PHARO_DOWNLOAD_VERSION_90_PLUS),1)
+	ifeq ($(PHARO_DOWNLOAD_VERSION),80)
+	PHARO_VM_URL := https://github.com/janvrany/pharo-vm/releases/latest/download/pharo64-linux-stable.zip
+  else ifeq ($(PHARO_DOWNLOAD_VERSION_90_PLUS),1)
 	PHARO_VM_URL := $(PHARO_DOWNLOAD_URL)/pharo-vm-Linux-$(shell uname -m)-stable.zip
   else
 	PHARO_VM_URL := $(PHARO_DOWNLOAD_URL)/pharo64-linux-stable.zip
@@ -58,7 +60,7 @@ PHARO_IMAGE=Pharo.image
 
 Pharo.image:
 	rm -f PharoImage.zip
-	curl -s -o PharoImage.zip "$(PHARO_IMAGE_URL)"
+	curl -L -s -o PharoImage.zip "$(PHARO_IMAGE_URL)"
 	unzip -n PharoImage.zip
 	mv `ls Pharo*SNAPSHOT*.image` "Pharo.image"
 	mv `ls Pharo*SNAPSHOT*.changes` "Pharo.changes"
@@ -74,7 +76,7 @@ PHARO_VM=$(PHARO_VM_DEFAULT)
 
 $(PHARO_VM_DEFAULT):
 	rm -f PharoVM.zip
-	curl -s -o PharoVM.zip "$(PHARO_VM_URL)"
+	curl -L -s -o PharoVM.zip "$(PHARO_VM_URL)"
 	unzip -n PharoVM.zip
 	rm PharoVM.zip
 	# Sigh, following hack is needed for those with new libcurl-gnutls
