@@ -88,11 +88,11 @@ $(PHARO_VM_DEFAULT):
 	# with this hack. Add your own distro when you encounter this.
 	echo $$(lsb_release -c -s || echo "unknown")
 	case $$(lsb_release -c -s || echo "unknown") in \
-		sid|trixie)									                  \
-			rm -f lib/pharo/*/libssh2*                  \
-			;;                                          \
-		*)                                            \
-			;;                                          \
+		sid|trixie)									\
+			rm lib/pharo/*/libssh2*					\
+			;;										\
+		*)											\
+			;;										\
 	esac
 endif
 PHARO_VM_HEADLESS ?= $(PHARO_VM) --headless
