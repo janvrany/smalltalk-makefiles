@@ -46,7 +46,9 @@ endif
 #
 # Automagically configure image options
 #
-ifeq ($(PHARO_DOWNLOAD_VERSION_90_PLUS),1)
+ifeq ($(PHARO_DOWNLOAD_VERSION),80)
+	PHARO_IMAGE_URL := https://github.com/janvrany/pharo8/releases/latest/download/pharo64.zip
+else ifeq ($(PHARO_DOWNLOAD_VERSION_90_PLUS),1)
 	PHARO_IMAGE_URL := $(PHARO_DOWNLOAD_URL)/pharoImage-$(shell uname -m).zip
 else
 	PHARO_IMAGE_URL := $(PHARO_DOWNLOAD_URL)/pharo64.zip
