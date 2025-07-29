@@ -11,7 +11,7 @@ PHARO_DOWNLOAD_URL := https://files.pharo.org/get-files/$(PHARO_DOWNLOAD_VERSION
 UNAME := $(shell uname | tr "[:upper:]" "[:lower:]")
 ifneq (,$(findstring linux,$(UNAME)))
 	ifeq ($(PHARO_DOWNLOAD_VERSION),80)
-	PHARO_VM_URL := https://github.com/janvrany/pharo-vm/releases/latest/download/pharo64-linux-stable.zip
+	PHARO_VM_URL := https://github.com/janvrany/pharo8-vm/releases/latest/download/pharo64-linux-stable.zip
   else ifeq ($(PHARO_DOWNLOAD_VERSION_90_PLUS),1)
 	PHARO_VM_URL := $(PHARO_DOWNLOAD_URL)/pharo-vm-Linux-$(shell uname -m)-stable.zip
   else
