@@ -133,7 +133,7 @@ GNUmakefile.local::
 ifneq ($(shell git rev-parse --show-toplevel 2> /dev/null),)
 	@echo "# PHARO_IMAGE=$(shell realpath --relative-to=. $$(git rev-parse --show-toplevel))/../UsablePharo8/UsablePharo.image" >> $@
 else
-	@echo "# PHARO_IMAGE=.../UsablePharo8/UsablePharo.image" >> $@
+	@echo "# PHARO_IMAGE=.../UsablePharo8/UsablePharo8.image" >> $@
 endif
 	@echo "" >> $@
 	@echo "# To use UsablePharo8 as base image, uncomment following line." >> $@
