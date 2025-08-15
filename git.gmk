@@ -1,13 +1,22 @@
+#
+# Git hooks management targets (for those who want them)
+#
 _makefiles_dir=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-_hooks_dir=$(shell git rev-parse --git-path hooks)
+_repo_dir=$(shell realpath --relative-to . $(shell git rev-parse --show-toplevel))
+
+$(_repo_dir)/.pre-commit-config.yaml:
+	sed -e "s/@MAKEFILES_DIR@/$(shell realpath --relative-to $(_repo_dir) $(_makefiles_dir))/g" \
+		$(_makefiles_dir)/pre-commit-config.yaml.in > $@
 
 $(_hooks_dir)/%: $(_makefiles_dir)/hooks/%
 	ln -s $(shell realpath --relative-to $(_hooks_dir) $<) $@
 
+git-hooks-install: $(_repo_dir)/.pre-commit-config.yaml
+	pre-commit validate-config $<
+	pre-commit install --hook-type pre-commit --hook-type commit-msg
 
-git-hooks-install: $(_hooks_dir)/commit-msg $(_hooks_dir)/pre-commit
-
-
+git-hooks-uninstall:
+	pre-commit uninstall --hook-type pre-commit --hook-type commit-msg
 
 #
 # Helper template to clone prerequisite project from git
